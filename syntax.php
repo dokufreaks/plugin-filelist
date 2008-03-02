@@ -310,8 +310,9 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
 		$files['basedir'] = $basedir;        	
 		$files['webdir'] = $webdir;
         foreach ($filenames as $filename) {
+        	if ($filename[0]=='.') continue; // exclude hidden files
             $filename = $dir.$filename;
-            if (is_dir($filename)) continue;
+            if (is_dir($filename)) continue; // exclude directories
             
             array_push($files['names'], $filename);
             array_push($files['mtimes'], filemtime($filename));
