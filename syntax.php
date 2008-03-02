@@ -132,7 +132,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
 			            $title = basename($filename);
 			        }
 			        
-			        $this->_create_link($filename, $files['basedir'], $files['webdir'], $params, $renderer);
+			        $this->_create_link($filename, $files['basedir'], $files['webdir'], $params, &$renderer);
 		            return true;
 		            
 		        case 'filelist':
@@ -144,7 +144,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
 		        	    	$renderer->listu_open();
 				        	foreach ($files['names'] as $filename) {
 				        	    $renderer->listitem_open(1);
-						        $this->_create_link($filename, $files['basedir'], $files['webdir'], $params, $renderer);
+						        $this->_create_link($filename, $files['basedir'], $files['webdir'], $params, &$renderer);
 				        	    $renderer->listitem_close();
 				        	}
 				        	$renderer->listu_close();
@@ -154,7 +154,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
 		        	    	$renderer->listo_open();
 				        	foreach ($files['names'] as $filename) {
 				        	    $renderer->listitem_open(1);
-						        $this->_create_link($filename, $files['basedir'], $files['webdir'], $params, $renderer);
+						        $this->_create_link($filename, $files['basedir'], $files['webdir'], $params, &$renderer);
 				        	    $renderer->listitem_close();
 				        	}
 				        	$renderer->listo_close();
@@ -189,7 +189,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
 		        	    	    
 				        	    $renderer->tablerow_open();
 				        	    $renderer->tablecell_open();
-						        $this->_create_link($filename, $files['basedir'], $files['webdir'], $params, $renderer);
+						        $this->_create_link($filename, $files['basedir'], $files['webdir'], $params, &$renderer);
 				        	    $renderer->tablecell_close();
 				        	    
 				        	    if ($params['tableshowsize']) {
@@ -220,7 +220,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
      * Creates the downloadlink for the given filename, based on the given 
      * parameters, and adds it to the output of the renderer.
      */
-    function _create_link($filename, $basedir, $webdir, $params, $renderer) {
+    function _create_link($filename, $basedir, $webdir, $params, &$renderer) {
     	global $conf;
     	
         //prepare for formating
