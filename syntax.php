@@ -139,6 +139,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
 		        	if (count($files['names']) == 0)
 		        	    break;
 		        	
+		        	$renderer->doc .= '<div class="filelist-plugin">'.DOKU_LF;
 		        	switch ($params['style']) {
 		        	    case 'list': 
 		        	    	$renderer->listu_open();
@@ -193,7 +194,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
 				        	    $renderer->tablecell_close();
 				        	    
 				        	    if ($params['tableshowsize']) {
-				        	        $renderer->tablecell_open();
+				        	        $renderer->tablecell_open(1, 'right');
 				        	        $renderer->doc .= $filesize;
 				        	        $renderer->tablecell_close();
 				        	    }
@@ -209,6 +210,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
 		        	    	$renderer->table_close();
 		        	    	break;
 		        	}
+		        	$renderer->doc .= '</div>'.DOKU_LF;
 		        	return true;
 		            
             }
