@@ -38,7 +38,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         return array(
             'author' => 'Gina Haeussge',
             'email'  => 'osd@foosel.net',
-            'date'   => '2008-03-02',
+            'date'   => '2008-03-13',
             'name'   => 'Filelist Plugin',
             'desc'   => 'Lists files matching a given glob pattern.',
             'url'    => 'http://wiki.foosel.net/snippets/dokuwiki/filelist',
@@ -132,7 +132,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
 			            $title = basename($filename);
 			        }
 			        
-			        $this->_create_link($filename, $files['basedir'], $files['webdir'], $params, &$renderer);
+			        $this->_create_link($filename, $files['basedir'], $files['webdir'], $params, $renderer);
 		            return true;
 		            
 		        case 'filelist':
@@ -145,7 +145,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
 		        	    	$renderer->listu_open();
 				        	foreach ($files['names'] as $filename) {
 				        	    $renderer->listitem_open(1);
-						        $this->_create_link($filename, $files['basedir'], $files['webdir'], $params, &$renderer);
+						        $this->_create_link($filename, $files['basedir'], $files['webdir'], $params, $renderer);
 				        	    $renderer->listitem_close();
 				        	}
 				        	$renderer->listu_close();
@@ -155,7 +155,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
 		        	    	$renderer->listo_open();
 				        	foreach ($files['names'] as $filename) {
 				        	    $renderer->listitem_open(1);
-						        $this->_create_link($filename, $files['basedir'], $files['webdir'], $params, &$renderer);
+						        $this->_create_link($filename, $files['basedir'], $files['webdir'], $params, $renderer);
 				        	    $renderer->listitem_close();
 				        	}
 				        	$renderer->listo_close();
@@ -190,7 +190,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
 		        	    	    
 				        	    $renderer->tablerow_open();
 				        	    $renderer->tablecell_open();
-						        $this->_create_link($filename, $files['basedir'], $files['webdir'], $params, &$renderer);
+						        $this->_create_link($filename, $files['basedir'], $files['webdir'], $params, $renderer);
 				        	    $renderer->tablecell_close();
 				        	    
 				        	    if ($params['tableshowsize']) {
