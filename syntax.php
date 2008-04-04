@@ -319,6 +319,8 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             	$mid = str_replace('/', ':', substr($filename, strlen($this->mediadir)));
             	$perm = auth_quickaclcheck($mid);
       			if ($perm < AUTH_READ) continue;    
+            } else {                         // exclude not readable files
+            	if (!is_readable($filename)) continue;
             }
             
             array_push($files['names'], $filename);
