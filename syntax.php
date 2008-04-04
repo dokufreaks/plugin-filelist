@@ -201,7 +201,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
 				        	    
 				        	    if ($params['tableshowdate']) {
 				        	        $renderer->tablecell_open();
-				        	        $renderer->doc .= date($conf['dformat'], $filemtime);
+				        	        $renderer->doc .= strftime($conf['dformat'], $filemtime);
 				        	        $renderer->tablecell_close();
 				        	    }
 				        	    
