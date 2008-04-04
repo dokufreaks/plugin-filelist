@@ -315,6 +315,11 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         	if ($filename[0]=='.') continue; // exclude hidden files
             $filename = $dir.$filename;
             if (is_dir($filename)) continue; // exclude directories
+            if (!$params['direct']) {        // exclude prohibited media files via ACLs
+            	$mid = str_replace('/', ':', substr($filename, strlen($this->mediadir)));
+            	$perm = auth_quickaclcheck($mid);
+      			if ($perm < AUTH_READ) continue;    
+            }
             
             array_push($files['names'], $filename);
             array_push($files['mtimes'], filemtime($filename));
