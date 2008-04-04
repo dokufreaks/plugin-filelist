@@ -38,7 +38,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         return array(
             'author' => 'Gina Haeussge',
             'email'  => 'osd@foosel.net',
-            'date'   => '2008-03-13',
+            'date'   => '2008-04-04',
             'name'   => 'Filelist Plugin',
             'desc'   => 'Lists files matching a given glob pattern.',
             'url'    => 'http://wiki.foosel.net/snippets/dokuwiki/filelist',
