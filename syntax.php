@@ -279,7 +279,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             $pattern = DOKU_INC.$pattern;
         }
         // get the canonicalized basedir (without resolving symlinks)
-        $dir = rp(dirname($pattern)).'/';
+        $dir = $this->_win_path_convert(rp(dirname($pattern)).'/');
 
         // if the directory is non existant, we of course have no matches
         if (!$dir || !file_exists($dir))
@@ -291,8 +291,9 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         $webdir = false;
         if (count($allowed_absolute_paths) == count($web_paths)) {
             for($i = 0; $i < count($allowed_absolute_paths); $i++) {
-                if (strstr($dir, trim($allowed_absolute_paths[$i])) == $dir) {
-                    $basedir = trim($allowed_absolute_paths[$i]);
+                $abs_path = $this->_win_path_convert(trim($allowed_absolute_paths[$i]));
+                if (strstr($dir, $abs_path) == $dir) {
+                    $basedir = $abs_path;
                     $webdir = trim($web_paths[$i]);
                     break;
                 }
@@ -356,6 +357,10 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         return $files;
         else
         return DOKU_PLUGIN_FILELIST_NOMATCH;
+    }
+
+    function _win_path_convert($path) {
+        return str_replace('\\', '/', trim($path));
     }
 }
 
