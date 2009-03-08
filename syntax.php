@@ -36,11 +36,11 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
     function getInfo() {
         return array(
             'author' => 'Gina Haeussge',
-            'email'  => 'osd@foosel.net',
-            'date'   => '2008-04-04',
+            'email'  => 'gina@foosel.net',
+            'date'   => '2009-03-08',
             'name'   => 'Filelist Plugin',
             'desc'   => 'Lists files matching a given glob pattern.',
-            'url'    => 'http://wiki.foosel.net/snippets/dokuwiki/filelist',
+            'url'    => 'http://foosel.net/snippets/dokuwiki/filelist',
         );
     }
 
