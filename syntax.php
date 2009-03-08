@@ -291,7 +291,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         $webdir = false;
         if (count($allowed_absolute_paths) == count($web_paths)) {
             for($i = 0; $i < count($allowed_absolute_paths); $i++) {
-                if (strstr($dir, trim($allowed_absolute_paths[$i]) == $dir) {
+                if (strstr($dir, trim($allowed_absolute_paths[$i])) == $dir) {
                     $basedir = trim($allowed_absolute_paths[$i]);
                     $webdir = trim($web_paths[$i]);
                     break;
