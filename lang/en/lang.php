@@ -6,7 +6,7 @@
  *
  * @author Gina Haeussge <osd@foosel.net>
  */
- 
+
 $lang['filename'] = 'Filename';
 $lang['filesize'] = 'Filesize';
 $lang['lastmodified'] = 'Last modified';
