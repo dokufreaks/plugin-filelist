@@ -27,8 +27,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
 
     function syntax_plugin_filelist() {
         global $conf;
-
-        $this->mediadir = rp(DOKU_INC.'/'.$conf['savedir'].'/media').'/';
+        $this->mediadir = $this->_win_path_convert(rp(DOKU_INC.'/'.$conf['savedir'].'/media').'/');
     }
 
     /**
@@ -305,7 +304,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         return DOKU_PLUGIN_FILELIST_OUTSIDEJAIL;
 
         // glob away
-        $filenames = @safe_glob($pattern);
+        $filenames = @safe_glob($this->_win_path_convert($pattern));
         if (!$filenames)
         return DOKU_PLUGIN_FILELIST_NOMATCH;
 
