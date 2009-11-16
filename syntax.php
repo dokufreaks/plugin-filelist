@@ -40,10 +40,10 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         return array(
             'author' => 'Gina Haeussge',
             'email'  => 'gina@foosel.net',
-            'date'   => '2009-11-03',
+            'date'   => '2009-11-16',
             'name'   => 'Filelist Plugin',
             'desc'   => 'Lists files matching a given glob pattern.',
-            'url'    => 'http://foosel.net/snippets/dokuwiki/filelist',
+            'url'    => 'http://foosel.org/snippets/dokuwiki/filelist',
         );
     }
 
