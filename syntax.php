@@ -465,6 +465,9 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         } else if ($params['sort'] == 'size') {
             $callback = array($this, '_compare_sizes');
             if ($params['order'] == 'desc') $reverseflag = true;
+        } else if ($params['sort'] == 'iname') {
+            $callback = array($this, '_compare_inames');
+            if ($params['order'] == 'desc') $reverseflag = true;
         } else {
             $callback = array($this, '_compare_names');
             if ($params['order'] == 'desc') $reverseflag = true;
@@ -652,6 +655,10 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
 
     function _compare_names($a, $b) {
         return strcmp($a['name'], $b['name']);
+    }
+
+    function _compare_inames($a, $b) {
+        return strcmp(strtolower($a['name']), strtolower($b['name']));
     }
 
     function _compare_ctimes($a, $b) {
