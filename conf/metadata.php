@@ -9,3 +9,5 @@
 $meta['allow_in_comments'] = array('onoff');
 $meta['allowed_absolute_paths'] = array('');
 $meta['web_paths'] = array('');
+$meta['defaults'] = array('string');
+

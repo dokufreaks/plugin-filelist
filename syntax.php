@@ -77,6 +77,9 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             }
         }
 
+        // load default config options
+        $flags = $this->getConf('defaults').'&'.$flags;
+
         $flags = split('&', $flags);
         $params = array(
             'sort' => 'name',
