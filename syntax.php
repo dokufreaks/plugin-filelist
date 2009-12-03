@@ -394,6 +394,8 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         global $conf;
         global $ID;
 
+        $allowed_absolute_paths = split(',', $this->getConf('allowed_absolute_paths'));
+
         $result = array(
             'files' => array(),
             'basedir' => false,
@@ -408,6 +410,9 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             }
             // replace : with / and prepend mediadir
             $pattern = $this->mediadir . str_replace(':', '/', $pattern);
+        } elseif($params['direct'] == 2){
+            // treat path as relative to first configured path
+            $pattern = $allowed_absolute_paths[0].'/'.$pattern;
         } else {
             // if path is not absolute, precede it with DOKU_INC
             if (!$this->_path_is_absolute($pattern)) {
@@ -423,7 +428,6 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         }
 
         // match pattern aginst allowed paths
-        $allowed_absolute_paths = split(',', $this->getConf('allowed_absolute_paths'));
         $web_paths = split(',', $this->getConf('web_paths'));
         $basedir = false;
         $webdir = false;
