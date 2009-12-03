@@ -582,6 +582,11 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             return false;
         }
 
+        $ext = explode(',',$this->getConf('extensions'));
+        $ext = array_map('trim',$ext);
+        $ext = array_map('preg_quote_cb',$ext);
+        $ext = join('|',$ext);
+
         if (($dir = opendir($path)) !== false) {
             $result = array();
             while (($file = readdir($dir)) !== false) {
@@ -600,6 +605,10 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
                 $filepath = $path . '/' . $file;
 
                 if ($this->_fnmatch($match, $file) || (is_dir($filepath) && $params['recursive'])) {
+                    if(!is_dir($filepath) && !preg_match('/('.$ext.')$/i',$file)){
+                        continue;
+                    }
+
                     if (!$params['direct']) {
                         // exclude prohibited media files via ACLs
                         $mid = str_replace('/', ':', substr($filepath, strlen($this->mediadir)));
