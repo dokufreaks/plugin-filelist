@@ -94,6 +94,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             'direct' => 0,
             'recursive' => 0,
             'titlefile' => '_title.txt',
+            'cache' => 0,
         );
         foreach($flags as $flag) {
             list($name, $value) = split('=', $flag);
@@ -115,7 +116,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         global $conf;
 
         // disable caching
-        $renderer->info['cache'] = false;
+        $renderer->info['cache'] = (bool) $params['cache'];
 
         list($type, $pattern, $params, $title, $pos) = $data;
         if ($mode == 'xhtml') {
