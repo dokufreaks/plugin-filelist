@@ -608,7 +608,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
                         if (!$params['direct']) {
                             $mid = str_replace('/', ':', substr($titlefile, strlen($this->mediadir)));
                             $perm = auth_quickaclcheck($mid);
-                            if ($perm >= AUTH_READ) {
+                            if (is_readable($titlefile) && $perm >= AUTH_READ) {
                                 $filename = io_readFile($titlefile, false);
                             }
                         } else {
