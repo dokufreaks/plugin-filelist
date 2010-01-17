@@ -26,11 +26,11 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
 
     function syntax_plugin_filelist() {
         global $conf;
-        $basedir = $conf['savedir'];
-        if (!$this->_path_is_absolute($basedir)) {
-            $basedir = DOKU_INC . '/' . $basedir;
+        $mediadir = $conf['mediadir'];
+        if (!$this->_path_is_absolute($mediadir)) {
+            $mediadir = DOKU_INC . '/' . $mediadir;
         }
-        $this->mediadir = $this->_win_path_convert($this->_realpath($basedir.'/media').'/');
+        $this->mediadir = $this->_win_path_convert($this->_realpath($mediadir).'/');
     }
 
     /**
