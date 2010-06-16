@@ -102,7 +102,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             $params['recursive'] = 0;
         }
 
-        return array($type, $pattern, $params, $title);
+        return array($type, $pattern, $params, $title, $pos);
     }
 
     /**
@@ -114,7 +114,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         // disable caching
         $renderer->info['cache'] = false;
 
-        list($type, $pattern, $params, $title) = $data;
+        list($type, $pattern, $params, $title, $pos) = $data;
         if ($mode == 'xhtml') {
 
             $result = $this->_create_filelist($pattern, $params);
@@ -160,7 +160,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
 
                         case 'table':
                             $renderer->doc .= '<div class="filelist-plugin">'.DOKU_LF;
-                            $this->_render_table($result, $params, $renderer);
+                            $this->_render_table($result, $params, $pos, $renderer);
                             $renderer->doc .= '</div>'.DOKU_LF;
                             break;
 
@@ -278,10 +278,10 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
      * @param $renderer the renderer to use
      * @return void
      */
-    function _render_table($result, $params, &$renderer) {
+    function _render_table($result, $params, $pos, &$renderer) {
         global $conf;
 
-        $renderer->table_open();
+        $renderer->table_open(NULL, NULL, $pos);
 
         if ($params['tableheader']) {
             $renderer->tableheader_open();
@@ -322,7 +322,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
 
             $renderer->tablerow_close();
         }
-        $renderer->table_close();
+        $renderer->table_close($pos);
     }
 
     /**

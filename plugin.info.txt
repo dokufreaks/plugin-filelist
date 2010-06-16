@@ -1,0 +1,7 @@
+base   filelist
+author Gina Häußge
+email  gina@foosel.net
+date   2009-11-16
+name   Filelist Plugin
+desc   Lists files matching a given glob pattern.
+url    http://foosel.org/snippets/dokuwiki/filelist
