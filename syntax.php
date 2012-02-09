@@ -204,7 +204,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         $link['more']   = '';
         $link['class']  = 'media';
         if (!$params['direct']) {
-            $link['url'] = ml(':'.str_replace('/', ':', substr($filepath, strlen($this->mediadir))));
+            $link['url'] = ml(':'.$this->_convert_mediapath($filepath));
         } else {
             $link['url'] = $webdir.substr($filepath, strlen($basedir));
         }
@@ -612,8 +612,8 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
 
                     if (!$params['direct']) {
                         // exclude prohibited media files via ACLs
-                        $mid = str_replace('/', ':', substr($filepath, strlen($this->mediadir)));
-                        $perm = auth_quickaclcheck(ltrim($mid,":"));
+                        $mid = $this->_convert_mediapath($filepath);
+                        $perm = auth_quickaclcheck($mid);
                         if ($perm < AUTH_READ) continue;
                     } else {
                         if (!is_readable($filepath)) continue;
@@ -623,7 +623,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
                     if (is_dir($filepath)) {
                         $titlefile = $filepath . '/' . $params['titlefile'];
                         if (!$params['direct']) {
-                            $mid = str_replace('/', ':', substr($titlefile, strlen($this->mediadir)));
+                            $mid = $this->_convert_mediapath($titlefile);
                             $perm = auth_quickaclcheck($mid);
                             if (is_readable($titlefile) && $perm >= AUTH_READ) {
                                 $filename = io_readFile($titlefile, false);
@@ -792,6 +792,11 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         } else {
             return ($path[0] == '/');
         }
+    }
+    
+    function _convert_mediapath($path) {
+        $mid = str_replace('/', ':', substr($path, strlen($this->mediadir))); // strip media base dir
+        return ltrim($mid, ':'); // strip leading :
     }
 
 }
