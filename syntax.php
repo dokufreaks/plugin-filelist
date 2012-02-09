@@ -613,7 +613,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
                     if (!$params['direct']) {
                         // exclude prohibited media files via ACLs
                         $mid = str_replace('/', ':', substr($filepath, strlen($this->mediadir)));
-                        $perm = auth_quickaclcheck($mid);
+                        $perm = auth_quickaclcheck(ltrim($mid,":"));
                         if ($perm < AUTH_READ) continue;
                     } else {
                         if (!is_readable($filepath)) continue;
