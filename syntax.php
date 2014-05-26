@@ -115,10 +115,10 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
     function render($mode, &$renderer, $data) {
         global $conf;
 
+        list($type, $pattern, $params, $title, $pos) = $data;
+
         // disable caching
         $renderer->info['cache'] = (bool) $params['cache'];
-
-        list($type, $pattern, $params, $title, $pos) = $data;
         if ($mode == 'xhtml') {
 
             $result = $this->_create_filelist($pattern, $params);
