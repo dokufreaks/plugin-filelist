@@ -66,12 +66,12 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         return false;
 
         $match = substr($match, 2, -2);
-        list($type, $match) = split('>', $match, 2);
-        list($pattern, $flags) = split('&', $match, 2);
+        list($type, $match) = explode('>', $match, 2);
+        list($pattern, $flags) = explode('&', $match, 2);
 
         if ($type == 'filename') {
             if (strpos($flags, '|') !== FALSE) {
-                list($flags, $title) = split('\|', $flags);
+                list($flags, $title) = explode('\|', $flags);
             } else {
                 $title = '';
             }
@@ -80,7 +80,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         // load default config options
         $flags = $this->getConf('defaults').'&'.$flags;
 
-        $flags = split('&', $flags);
+        $flags = explode('&', $flags);
         $params = array(
             'sort' => 'name',
             'order' => 'asc',
@@ -97,7 +97,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             'cache' => 0,
         );
         foreach($flags as $flag) {
-            list($name, $value) = split('=', $flag);
+            list($name, $value) = explode('=', $flag);
             $params[trim($name)] = trim($value);
         }
 
@@ -395,7 +395,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         global $conf;
         global $ID;
 
-        $allowed_absolute_paths = split(',', $this->getConf('allowed_absolute_paths'));
+        $allowed_absolute_paths = explode(',', $this->getConf('allowed_absolute_paths'));
 
         $result = array(
             'files' => array(),
@@ -429,7 +429,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         }
 
         // match pattern aginst allowed paths
-        $web_paths = split(',', $this->getConf('web_paths'));
+        $web_paths = explode(',', $this->getConf('web_paths'));
         $basedir = false;
         $webdir = false;
         if (count($allowed_absolute_paths) == count($web_paths)) {
