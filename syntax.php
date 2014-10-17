@@ -4,7 +4,9 @@
  *
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Gina Haeussge <osd@foosel.net>
- */
+  *
+ * added parameter 'nocache' to force the browser to reload the media data //Juergen, 2014-10-17
+*/
 
 if(!defined('DOKU_INC')) define('DOKU_INC',realpath(dirname(__FILE__).'/../../').'/');
 if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
@@ -95,6 +97,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             'recursive' => 0,
             'titlefile' => '_title.txt',
             'cache' => 0,
+            'nocache' => 0,
         );
         foreach($flags as $flag) {
             list($name, $value) = explode('=', $flag);
@@ -203,10 +206,19 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         $link['suf']    = '';
         $link['more']   = '';
         $link['class']  = 'media';
+		//added parameter 'nocache'
         if (!$params['direct']) {
-            $link['url'] = ml(':'.$this->_convert_mediapath($filepath));
+			if (!$params['nocache']) {
+				$link['url'] = ml(':'.$this->_convert_mediapath($filepath));
+			} else {
+				$link['url'] = ml(':'.$this->_convert_mediapath($filepath)) . '&nocache';
+			}
         } else {
-            $link['url'] = $webdir.substr($filepath, strlen($basedir));
+			if (!$params['nocache']) {
+				$link['url'] = $webdir.substr($filepath, strlen($basedir));
+			} else {
+				$link['url'] = $webdir.substr($filepath, strlen($basedir)) . '&nocache';
+			}
         }
         $link['name']   = $filename;
         $link['title']  = $renderer->_xmlEntities($link['url']);
