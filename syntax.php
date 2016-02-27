@@ -59,7 +59,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
     /**
      * Handle the match
      */
-    function handle($match, $state, $pos, &$handler) {
+    function handle($match, $state, $pos, Doku_Handler $handler) {
 
         // do not allow the syntax in comments
         if (!$this->getConf('allow_in_comments') && isset($_REQUEST['comment']))
@@ -112,7 +112,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
     /**
      * Create output
      */
-    function render($mode, &$renderer, $data) {
+    function render($mode, Doku_Renderer $renderer, $data) {
         global $conf;
 
         list($type, $pattern, $params, $title, $pos) = $data;
