@@ -338,7 +338,19 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
      * @return void
      */
     function _render_page($result, $params, &$renderer) {
-        $this->_render_page_section($result['files'], $result['basedir'], $result['webdir'], $params, $renderer, $renderer->lastlevel + 1);
+        if ( method_exists ($renderer, 'getLastlevel') === false ) {
+            $class_vars = get_class_vars (get_class($renderer));
+            if ($class_vars ['lastlevel'] !== NULL) {
+                // Old releases before "hrun": $lastlevel is accessible
+                $this->_render_page_section($result['files'], $result['basedir'], $result['webdir'], $params, $renderer, $renderer->lastlevel + 1);
+            } else {
+                // Release "hrun" or newer without method 'getLastlevel()'.
+                // Lastlevel can't be determined. Workaroud: always use level 1.
+                $this->_render_page_section($result['files'], $result['basedir'], $result['webdir'], $params, $renderer, 1);
+            }
+        } else {
+            $this->_render_page_section($result['files'], $result['basedir'], $result['webdir'], $params, $renderer, $renderer->getLastlevel() + 1);
+        }
     }
 
     /**
