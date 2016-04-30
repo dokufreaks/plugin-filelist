@@ -23,6 +23,7 @@ define('DOKU_PLUGIN_FILELIST_OUTSIDEJAIL', -2);
 class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
 
     var $mediadir;
+    var $is_odt_export = false;
 
     function syntax_plugin_filelist() {
         global $conf;
@@ -117,9 +118,13 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
 
         list($type, $pattern, $params, $title, $pos) = $data;
 
+        if ($mode == 'odt') {
+            $this->is_odt_export = true;
+        }
+        
         // disable caching
         $renderer->info['cache'] = (bool) $params['cache'];
-        if ($mode == 'xhtml') {
+        if ($mode == 'xhtml' || $mode == 'odt') {
 
             $result = $this->_create_filelist($pattern, $params);
             if ($type == 'filename') {
@@ -157,15 +162,23 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
                     switch ($params['style']) {
                         case 'list':
                         case 'olist':
-                            $renderer->doc .= '<div class="filelist-plugin">'.DOKU_LF;
+                            if (!$this->is_odt_export) {
+                                $renderer->doc .= '<div class="filelist-plugin">'.DOKU_LF;
+                            }
                             $this->_render_list($result, $params, $renderer);
-                            $renderer->doc .= '</div>'.DOKU_LF;
+                            if (!$this->is_odt_export) {
+                                $renderer->doc .= '</div>'.DOKU_LF;
+                            }
                             break;
 
                         case 'table':
-                            $renderer->doc .= '<div class="filelist-plugin">'.DOKU_LF;
+                            if (!$this->is_odt_export) {
+                                $renderer->doc .= '<div class="filelist-plugin">'.DOKU_LF;
+                            }
                             $this->_render_table($result, $params, $pos, $renderer);
-                            $renderer->doc .= '</div>'.DOKU_LF;
+                            if (!$this->is_odt_export) {
+                                $renderer->doc .= '</div>'.DOKU_LF;
+                            }
                             break;
 
                         case 'page':
@@ -216,7 +229,37 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         $link['class'] .= ' mediafile mf_'.$ext;
 
         //output formatted
-        $renderer->doc .= $renderer->_formatLink($link);
+        if ( !$this->is_odt_export ) {
+            $renderer->doc .= $renderer->_formatLink($link);
+        } else {
+            $this->render_odt_link ($link, $renderer);
+        }
+    }
+
+    /**
+     * Renders a link for odt mode.
+     *
+     * @param $link the link parameters
+     * @param $renderer the renderer to use
+     * @return void
+     */
+    protected function render_odt_link ($link, &$renderer) {
+        if ( method_exists ($renderer, 'getODTProperties') === true ) {
+            $properties = array ();
+
+            // Get CSS properties for ODT export.
+            $renderer->getODTProperties ($properties, 'a', $link['class'], NULL, 'screen');
+
+            // Insert image if present for that media class.
+            if ( empty($properties ['background-image']) === false ) {
+                $properties ['background-image'] =
+                    $renderer->replaceURLPrefix ($properties ['background-image'], DOKU_INC);
+                $renderer->_odtAddImage ($properties ['background-image']);
+            }
+        }
+
+        // Render link.
+        $renderer->externallink($link['url'], $link['name']);
     }
 
     /**
@@ -253,13 +296,25 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             if ($file['children'] !== false && $file['treesize'] > 0) {
                 // render the directory and its subtree
                 $renderer->listitem_open($level);
+                if ($this->is_odt_export) {
+                    $renderer->p_open();
+                }
                 $renderer->doc .= $file['name'];
                 $this->_render_list_items($file['children'], $basedir, $webdir, $params, $renderer, $level+1);
+                if ($this->is_odt_export) {
+                    $renderer->p_close();
+                }
                 $renderer->listitem_close();
             } else if ($file['children'] === false) {
                 // render the file
                 $renderer->listitem_open($level);
+                if ($this->is_odt_export) {
+                    $renderer->p_open();
+                }
                 $this->_render_link($file['name'], $file['path'], $basedir, $webdir, $params, $renderer);
+                if ($this->is_odt_export) {
+                    $renderer->p_close();
+                }
                 $renderer->listitem_close();
             } else {
                 // ignore empty directories
