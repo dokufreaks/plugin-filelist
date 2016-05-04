@@ -96,6 +96,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             'recursive' => 0,
             'titlefile' => '_title.txt',
             'cache' => 0,
+            'randlinks' => 0,
         );
         foreach($flags as $flag) {
             list($name, $value) = explode('=', $flag);
@@ -216,10 +217,14 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         $link['suf']    = '';
         $link['more']   = '';
         $link['class']  = 'media';
+        $urlparams = '';
+        if ($params['randlinks']) {
+            $urlparams = '?'.time();
+        }
         if (!$params['direct']) {
-            $link['url'] = ml(':'.$this->_convert_mediapath($filepath));
+            $link['url'] = ml(':'.$this->_convert_mediapath($filepath)).$urlparams;
         } else {
-            $link['url'] = $webdir.substr($filepath, strlen($basedir));
+            $link['url'] = $webdir.substr($filepath, strlen($basedir)).$urlparams;
         }
         $link['name']   = $filename;
         $link['title']  = $renderer->_xmlEntities($link['url']);
