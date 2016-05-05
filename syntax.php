@@ -333,19 +333,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
                     $renderer->p_open();
                 }
                 if ($params['preview']) {
-                    $imagepath = $this->get_preview_image_path($file['path'], $params);
-                    if (!empty($imagepath)) {
-                        if (!$params['direct']) {
-                            $imgLink = ml(':'.$this->_convert_mediapath($imagepath));
-                        } else {
-                            $imgLink = $webdir.substr($imagepath, strlen($basedir));
-                        }
-                        $previewsize = $params['previewsize'];
-                        if ($previewsize == 0) {
-                            $previewsize = 32;
-                        }
-                        $renderer->doc .= '<img style=" max-height: '.$previewsize.'px; max-width: '.$previewsize.'px;" src="'.$imgLink.'">';
-                    }
+                    $this->_render_preview_image($file['path'], $basedir, $webdir, $params, $renderer);
                 }
                 $this->_render_link($file['name'], $file['path'], $basedir, $webdir, $params, $renderer);
                 if ($this->is_odt_export) {
@@ -433,19 +421,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             if ($params['preview']) {
                 $renderer->tablecell_open(1, 'center', 1);
 
-                $imagepath = $this->get_preview_image_path($file['path'], $params);
-                if (!empty($imagepath)) {
-                    if (!$params['direct']) {
-                        $imgLink = ml(':'.$this->_convert_mediapath($imagepath));
-                    } else {
-                        $imgLink = $result['webdir'].substr($imagepath, strlen($result['basedir']));
-                    }
-                    $previewsize = $params['previewsize'];
-                    if ($previewsize == 0) {
-                        $previewsize = 32;
-                    }
-                    $renderer->doc .= '<img style=" max-height: '.$previewsize.'px; max-width: '.$previewsize.'px;" src="'.$imgLink.'">';
-                }
+                $this->_render_preview_image($file['path'], $result['basedir'], $result['webdir'], $params, $renderer);
                 $renderer->tablecell_close();
             }
 
@@ -967,5 +943,31 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             }
         }
         return $imagepath;
+    }
+
+    /**
+     * Render a preview item for file $filepath.
+     *
+     * @param $filepath the file for which a preview image shall be rendered
+     * @param $basedir the basedir to use
+     * @param $webdir the webdir to use
+     * @param $params the parameters of the filelist call
+     * @param $renderer the renderer to use
+     * @return void
+     */
+    protected function _render_preview_image ($filepath, $basedir, $webdir, $params, Doku_Renderer $renderer) {
+        $imagepath = $this->get_preview_image_path($filepath, $params);
+        if (!empty($imagepath)) {
+            if (!$params['direct']) {
+                $imgLink = ml(':'.$this->_convert_mediapath($imagepath));
+            } else {
+                $imgLink = $webdir.substr($imagepath, strlen($basedir));
+            }
+            $previewsize = $params['previewsize'];
+            if ($previewsize == 0) {
+                $previewsize = 32;
+            }
+            $renderer->doc .= '<img style=" max-height: '.$previewsize.'px; max-width: '.$previewsize.'px;" src="'.$imgLink.'">';
+        }
     }
 }
