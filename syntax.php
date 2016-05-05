@@ -344,7 +344,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
                         if ($previewsize == 0) {
                             $previewsize = 32;
                         }
-                        $renderer->doc .= '<img class="preview" style=" max-height: '.$previewsize.'px; max-width: '.$previewsize.'px;" src="'.$imgLink.'">';
+                        $renderer->doc .= '<img style=" max-height: '.$previewsize.'px; max-width: '.$previewsize.'px;" src="'.$imgLink.'">';
                     }
                 }
                 $this->_render_link($file['name'], $file['path'], $basedir, $webdir, $params, $renderer);
@@ -444,7 +444,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
                     if ($previewsize == 0) {
                         $previewsize = 32;
                     }
-                    $renderer->doc .= '<img class="preview" style=" max-height: '.$previewsize.'px; max-width: '.$previewsize.'px;" src="'.$imgLink.'">';
+                    $renderer->doc .= '<img style=" max-height: '.$previewsize.'px; max-width: '.$previewsize.'px;" src="'.$imgLink.'">';
                 }
                 $renderer->tablecell_close();
             }
