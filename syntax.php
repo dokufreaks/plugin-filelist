@@ -97,6 +97,9 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             'titlefile' => '_title.txt',
             'cache' => 0,
             'randlinks' => 0,
+            'preview' => 0,
+            'previewsize' => 32,
+            'link' => 2,
         );
         foreach($flags as $flag) {
             list($name, $value) = explode('=', $flag);
@@ -216,7 +219,6 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         $link['pre']    = '';
         $link['suf']    = '';
         $link['more']   = '';
-        $link['class']  = 'media';
         $urlparams = '';
         if ($params['randlinks']) {
             $urlparams = '?'.time();
@@ -230,14 +232,28 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         $link['title']  = $renderer->_xmlEntities($link['url']);
         if($conf['relnofollow']) $link['more'] .= ' rel="nofollow"';
 
-        list($ext,$mime) = mimetype(basename($filepath));
-        $link['class'] .= ' mediafile mf_'.$ext;
+        if ($params['link']) {
+            switch ($params['link']) {
+                case 1:
+                    // Link without background image
+                    $link['class']  = 'media';
+                    break;
+                default:
+                    // Link with background image
+                    list($ext,$mime) = mimetype(basename($filepath));
+                    $link['class'] .= ' mediafile mf_'.$ext;
+                    break;
+            }
 
-        //output formatted
-        if ( !$this->is_odt_export ) {
-            $renderer->doc .= $renderer->_formatLink($link);
+            //output formatted
+            if ( !$this->is_odt_export ) {
+                $renderer->doc .= $renderer->_formatLink($link);
+            } else {
+                $this->render_odt_link ($link, $renderer);
+            }
         } else {
-            $this->render_odt_link ($link, $renderer);
+            // No link, just plain text.
+            $renderer->doc .= $filename;
         }
     }
 
@@ -316,6 +332,21 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
                 if ($this->is_odt_export) {
                     $renderer->p_open();
                 }
+                if ($params['preview']) {
+                    $imagepath = $this->get_preview_image_path($file['path'], $params);
+                    if (!empty($imagepath)) {
+                        if (!$params['direct']) {
+                            $imgLink = ml(':'.$this->_convert_mediapath($imagepath));
+                        } else {
+                            $imgLink = $webdir.substr($imagepath, strlen($basedir));
+                        }
+                        $previewsize = $params['previewsize'];
+                        if ($previewsize == 0) {
+                            $previewsize = 32;
+                        }
+                        $renderer->doc .= '<img class="preview" style=" max-height: '.$previewsize.'px; max-width: '.$previewsize.'px;" src="'.$imgLink.'">';
+                    }
+                }
                 $this->_render_link($file['name'], $file['path'], $basedir, $webdir, $params, $renderer);
                 if ($this->is_odt_export) {
                     $renderer->p_close();
@@ -364,6 +395,21 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
                 $renderer->tableheader_close();
             }
 
+            if ($params['preview']) {
+                $renderer->tableheader_open();
+                switch ($params['preview']) {
+                    case 1:
+                        $renderer->doc .= $this->getLang('preview').' / '.$this->getLang('filetype');
+                        break;
+                    case 2:
+                        $renderer->doc .= $this->getLang('preview');
+                        break;
+                    case 3:
+                        $renderer->doc .= $this->getLang('filetype');
+                        break;
+                }
+                $renderer->tableheader_close();
+            }
         }
 
         foreach ($result['files'] as $file) {
@@ -381,6 +427,25 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             if ($params['tableshowdate']) {
                 $renderer->tablecell_open();
                 $renderer->doc .= strftime($conf['dformat'], $file['mtime']);
+                $renderer->tablecell_close();
+            }
+
+            if ($params['preview']) {
+                $renderer->tablecell_open();
+
+                $imagepath = $this->get_preview_image_path($file['path'], $params);
+                if (!empty($imagepath)) {
+                    if (!$params['direct']) {
+                        $imgLink = ml(':'.$this->_convert_mediapath($imagepath));
+                    } else {
+                        $imgLink = $result['webdir'].substr($imagepath, strlen($result['basedir']));
+                    }
+                    $previewsize = $params['previewsize'];
+                    if ($previewsize == 0) {
+                        $previewsize = 32;
+                    }
+                    $renderer->doc .= '<img class="preview" style=" max-height: '.$previewsize.'px; max-width: '.$previewsize.'px;" src="'.$imgLink.'">';
+                }
                 $renderer->tablecell_close();
             }
 
@@ -872,4 +937,35 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         return ltrim($mid, ':'); // strip leading :
     }
 
+    /**
+     * The function determines the preview image path for the given file
+     * depending on the file type and the 'preview' config option value:
+     * 1: Display file as preview image if itself is an image otherwise
+     *    choose DokuWiki image corresponding to the file extension
+     * 2: Display file as preview image if itself is an image otherwise
+     *    display no image
+     * 3. Display DokuWiki image corresponding to the file extension
+     *
+     * @param $filename the file to check
+     * @return string Image to use for preview image
+     */
+    protected function get_preview_image_path ($filename, $params) {
+        list($ext,$mime) = mimetype(basename($filename));
+        $imagepath = '';
+        if (($params['preview'] == 1 || $params['preview'] == 2) &&
+            strncmp($mime, 'image', strlen('image')) == 0) {
+            // The file is an image. Return itself as the image path.
+            $imagepath = $filename;
+        }
+        if (($params['preview'] == 1 && empty($imagepath)) ||
+            $params['preview'] == 3 ) {
+            // No image. Return DokuWiki image for file extension.
+            if (!empty($ext)) {
+                $imagepath = DOKU_INC.'lib/images/fileicons/32x32/'.$ext.'.png';
+            } else {
+                $imagepath = DOKU_INC.'lib/images/fileicons/32x32/file.png';
+            }
+        }
+        return $imagepath;
+    }
 }
