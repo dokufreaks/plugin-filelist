@@ -205,15 +205,8 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         $link['pre']    = '';
         $link['suf']    = '';
         $link['more']   = '';
-        $urlparams = '';
-        if ($params['randlinks']) {
-            $urlparams = '?'.time();
-        }
-        if (!$params['direct']) {
-            $link['url'] = ml(':'.$this->_convert_mediapath($filepath)).$urlparams;
-        } else {
-            $link['url'] = $webdir.substr($filepath, strlen($basedir)).$urlparams;
-        }
+        $link['url'] = $this->_get_link_url ($filepath, $basedir, $webdir, $params['randlinks'], $params['direct']);
+
         $link['name']   = $filename;
         $link['title']  = $renderer->_xmlEntities($link['url']);
         if($conf['relnofollow']) $link['more'] .= ' rel="nofollow"';
@@ -944,16 +937,35 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
     protected function _render_preview_image ($filepath, $basedir, $webdir, $params, Doku_Renderer $renderer) {
         $imagepath = $this->get_preview_image_path($filepath, $params);
         if (!empty($imagepath)) {
-            if (!$params['direct']) {
-                $imgLink = ml(':'.$this->_convert_mediapath($imagepath));
-            } else {
-                $imgLink = $webdir.substr($imagepath, strlen($basedir));
-            }
+            $imgLink = $this->_get_link_url ($imagepath, $basedir, $webdir, 0, $params['direct']);
+
             $previewsize = $params['previewsize'];
             if ($previewsize == 0) {
                 $previewsize = 32;
             }
             $renderer->doc .= '<img style=" max-height: '.$previewsize.'px; max-width: '.$previewsize.'px;" src="'.$imgLink.'">';
         }
+    }
+
+    /**
+     * Create URL for file $filepath.
+     *
+     * @param $filepath the file for which a preview image shall be rendered
+     * @param $basedir the basedir to use
+     * @param $webdir the webdir to use
+     * @param $params the parameters of the filelist call
+     * @return string the generated URL
+     */
+    protected function _get_link_url ($filepath, $basedir, $webdir, $randlinks, $direct) {
+        $urlparams = '';
+        if ($randlinks) {
+            $urlparams = '?'.time();
+        }
+        if (!$direct) {
+            $url = ml(':'.$this->_convert_mediapath($filepath)).$urlparams;
+        } else {
+            $url = $webdir.substr($filepath, strlen($basedir)).$urlparams;
+        }
+        return $url;
     }
 }
