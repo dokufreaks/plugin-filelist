@@ -396,7 +396,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             }
 
             if ($params['preview']) {
-                $renderer->tableheader_open();
+                $renderer->tableheader_open(1, 'center', 1);
                 switch ($params['preview']) {
                     case 1:
                         $renderer->doc .= $this->getLang('preview').' / '.$this->getLang('filetype');
@@ -431,7 +431,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             }
 
             if ($params['preview']) {
-                $renderer->tablecell_open();
+                $renderer->tablecell_open(1, 'center', 1);
 
                 $imagepath = $this->get_preview_image_path($file['path'], $params);
                 if (!empty($imagepath)) {
