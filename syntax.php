@@ -34,20 +34,6 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         $this->mediadir = $this->_win_path_convert($this->_realpath($mediadir).'/');
     }
 
-    /**
-     * return some info
-     */
-    function getInfo() {
-        return array(
-            'author' => 'Gina Haeussge',
-            'email'  => 'gina@foosel.net',
-            'date'   => '2009-11-16',
-            'name'   => 'Filelist Plugin',
-            'desc'   => 'Lists files matching a given glob pattern.',
-            'url'    => 'http://foosel.org/snippets/dokuwiki/filelist',
-        );
-    }
-
     function getType(){ return 'substition'; }
     function getPType(){ return 'block'; }
     function getSort(){ return 222; }
