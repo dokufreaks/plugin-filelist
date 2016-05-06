@@ -86,6 +86,9 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             'preview' => 0,
             'previewsize' => 32,
             'link' => 2,
+            'showsize' => 0,
+            'showdate' => 0,
+            'listsep' => '", "',
         );
         foreach($flags as $flag) {
             list($name, $value) = explode('=', $flag);
@@ -96,6 +99,9 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         if ($type == 'filename') {
             $params['recursive'] = 0;
         }
+
+        // Trim list separator
+        $params['listsep'] = trim($params['listsep'], '"');
 
         return array($type, $pattern, $params, $title, $pos);
     }
@@ -286,6 +292,8 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
      * @return void
      */
     function _render_list_items($files, $basedir, $webdir, $params, Doku_Renderer $renderer, $level = 1) {
+        global $conf;
+
         if ($params['style'] == 'olist') {
             $renderer->listo_open();
         } else {
@@ -306,19 +314,36 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
                 }
                 $renderer->listitem_close();
             } else if ($file['children'] === false) {
-                // render the file
+                // open list item
                 $renderer->listitem_open($level);
                 if ($this->is_odt_export) {
                     $renderer->p_open();
                 }
+
+                // render the preview image
                 if ($params['preview']) {
                     $this->_render_preview_image($file['path'], $basedir, $webdir, $params, $renderer);
                 }
+
+                // render the file link
                 $this->_render_link($file['name'], $file['path'], $basedir, $webdir, $params, $renderer);
+
+                // render filesize
+                if ($params['showsize']) {
+                    $renderer->doc .= $params['listsep'].$this->_size_readable($file['size'], 'PiB', 'bi', '%01.1f %s');
+                }
+
+                // render lastmodified
+                if ($params['showdate']) {
+                    $renderer->doc .= $params['listsep'].strftime($conf['dformat'], $file['mtime']);
+                }
+
+                // close list item
                 if ($this->is_odt_export) {
                     $renderer->p_close();
                 }
                 $renderer->listitem_close();
+
             } else {
                 // ignore empty directories
                 continue;
@@ -350,13 +375,13 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             $renderer->doc .= $this->getLang('filename');
             $renderer->tableheader_close();
 
-            if ($params['tableshowsize']) {
+            if ($params['tableshowsize'] || $params['showsize']) {
                 $renderer->tableheader_open();
                 $renderer->doc .= $this->getLang('filesize');
                 $renderer->tableheader_close();
             }
 
-            if ($params['tableshowdate']) {
+            if ($params['tableshowdate'] || $params['showdate']) {
                 $renderer->tableheader_open();
                 $renderer->doc .= $this->getLang('lastmodified');
                 $renderer->tableheader_close();
@@ -385,13 +410,13 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             $this->_render_link($file['name'], $file['path'], $result['basedir'], $result['webdir'], $params, $renderer);
             $renderer->tablecell_close();
 
-            if ($params['tableshowsize']) {
+            if ($params['tableshowsize'] || $params['showsize']) {
                 $renderer->tablecell_open(1, 'right');
                 $renderer->doc .= $this->_size_readable($file['size'], 'PiB', 'bi', '%01.1f %s');
                 $renderer->tablecell_close();
             }
 
-            if ($params['tableshowdate']) {
+            if ($params['tableshowdate'] || $params['showdate']) {
                 $renderer->tablecell_open();
                 $renderer->doc .= strftime($conf['dformat'], $file['mtime']);
                 $renderer->tablecell_close();
