@@ -34,20 +34,6 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         $this->mediadir = $this->_win_path_convert($this->_realpath($mediadir).'/');
     }
 
-    /**
-     * return some info
-     */
-    function getInfo() {
-        return array(
-            'author' => 'Gina Haeussge',
-            'email'  => 'gina@foosel.net',
-            'date'   => '2009-11-16',
-            'name'   => 'Filelist Plugin',
-            'desc'   => 'Lists files matching a given glob pattern.',
-            'url'    => 'http://foosel.org/snippets/dokuwiki/filelist',
-        );
-    }
-
     function getType(){ return 'substition'; }
     function getPType(){ return 'block'; }
     function getSort(){ return 222; }
@@ -210,7 +196,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
      * @param $renderer the renderer to use
      * @return void
      */
-    function _render_link($filename, $filepath, $basedir, $webdir, $params, &$renderer) {
+    function _render_link($filename, $filepath, $basedir, $webdir, $params, Doku_Renderer $renderer) {
         global $conf;
 
         //prepare for formating
@@ -219,15 +205,8 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         $link['pre']    = '';
         $link['suf']    = '';
         $link['more']   = '';
-        $urlparams = '';
-        if ($params['randlinks']) {
-            $urlparams = '?'.time();
-        }
-        if (!$params['direct']) {
-            $link['url'] = ml(':'.$this->_convert_mediapath($filepath)).$urlparams;
-        } else {
-            $link['url'] = $webdir.substr($filepath, strlen($basedir)).$urlparams;
-        }
+        $link['url'] = $this->_get_link_url ($filepath, $basedir, $webdir, $params['randlinks'], $params['direct']);
+
         $link['name']   = $filename;
         $link['title']  = $renderer->_xmlEntities($link['url']);
         if($conf['relnofollow']) $link['more'] .= ' rel="nofollow"';
@@ -264,7 +243,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
      * @param $renderer the renderer to use
      * @return void
      */
-    protected function render_odt_link ($link, &$renderer) {
+    protected function render_odt_link ($link, Doku_Renderer $renderer) {
         if ( method_exists ($renderer, 'getODTProperties') === true ) {
             $properties = array ();
 
@@ -291,7 +270,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
      * @param $renderer the renderer to use
      * @return void
      */
-    function _render_list($result, $params, &$renderer) {
+    function _render_list($result, $params, Doku_Renderer $renderer) {
         $this->_render_list_items($result['files'], $result['basedir'], $result['webdir'], $params, $renderer);
     }
 
@@ -306,7 +285,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
      * @param $level the level to render
      * @return void
      */
-    function _render_list_items($files, $basedir, $webdir, $params, &$renderer, $level = 1) {
+    function _render_list_items($files, $basedir, $webdir, $params, Doku_Renderer $renderer, $level = 1) {
         if ($params['style'] == 'olist') {
             $renderer->listo_open();
         } else {
@@ -361,7 +340,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
      * @param $renderer the renderer to use
      * @return void
      */
-    function _render_table($result, $params, $pos, &$renderer) {
+    function _render_table($result, $params, $pos, Doku_Renderer $renderer) {
         global $conf;
 
         $renderer->table_open(NULL, NULL, $pos);
@@ -438,7 +417,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
      * @param $renderer the renderer to use
      * @return void
      */
-    function _render_page($result, $params, &$renderer) {
+    function _render_page($result, $params, Doku_Renderer $renderer) {
         if ( method_exists ($renderer, 'getLastlevel') === false ) {
             $class_vars = get_class_vars (get_class($renderer));
             if ($class_vars ['lastlevel'] !== NULL) {
@@ -466,7 +445,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
      * @param $level the level to render
      * @return void
      */
-    function _render_page_section($files, $basedir, $webdir, $params, &$renderer, $level) {
+    function _render_page_section($files, $basedir, $webdir, $params, Doku_Renderer $renderer, $level) {
         $trees = array();
         $leafs = array();
 
@@ -491,6 +470,29 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             }
         } else {
             $this->_render_list_items($trees, $basedir, $webdir, $params, $renderer);
+        }
+    }
+
+    /**
+     * Render a preview item for file $filepath.
+     *
+     * @param $filepath the file for which a preview image shall be rendered
+     * @param $basedir the basedir to use
+     * @param $webdir the webdir to use
+     * @param $params the parameters of the filelist call
+     * @param $renderer the renderer to use
+     * @return void
+     */
+    protected function _render_preview_image ($filepath, $basedir, $webdir, $params, Doku_Renderer $renderer) {
+        $imagepath = $this->get_preview_image_path($filepath, $params);
+        if (!empty($imagepath)) {
+            $imgLink = $this->_get_link_url ($imagepath, $basedir, $webdir, 0, $params['direct']);
+
+            $previewsize = $params['previewsize'];
+            if ($previewsize == 0) {
+                $previewsize = 32;
+            }
+            $renderer->doc .= '<img style=" max-height: '.$previewsize.'px; max-width: '.$previewsize.'px;" src="'.$imgLink.'">';
         }
     }
 
@@ -946,28 +948,24 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * Render a preview item for file $filepath.
+     * Create URL for file $filepath.
      *
      * @param $filepath the file for which a preview image shall be rendered
      * @param $basedir the basedir to use
      * @param $webdir the webdir to use
      * @param $params the parameters of the filelist call
-     * @param $renderer the renderer to use
-     * @return void
+     * @return string the generated URL
      */
-    protected function _render_preview_image ($filepath, $basedir, $webdir, $params, Doku_Renderer $renderer) {
-        $imagepath = $this->get_preview_image_path($filepath, $params);
-        if (!empty($imagepath)) {
-            if (!$params['direct']) {
-                $imgLink = ml(':'.$this->_convert_mediapath($imagepath));
-            } else {
-                $imgLink = $webdir.substr($imagepath, strlen($basedir));
-            }
-            $previewsize = $params['previewsize'];
-            if ($previewsize == 0) {
-                $previewsize = 32;
-            }
-            $renderer->doc .= '<img style=" max-height: '.$previewsize.'px; max-width: '.$previewsize.'px;" src="'.$imgLink.'">';
+    protected function _get_link_url ($filepath, $basedir, $webdir, $randlinks, $direct) {
+        $urlparams = '';
+        if ($randlinks) {
+            $urlparams = '?'.time();
         }
+        if (!$direct) {
+            $url = ml(':'.$this->_convert_mediapath($filepath)).$urlparams;
+        } else {
+            $url = $webdir.substr($filepath, strlen($basedir)).$urlparams;
+        }
+        return $url;
     }
 }
