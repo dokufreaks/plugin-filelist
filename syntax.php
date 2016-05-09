@@ -25,7 +25,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
     var $mediadir;
     var $is_odt_export = false;
 
-    function syntax_plugin_filelist() {
+    function __construct() {
         global $conf;
         $mediadir = $conf['mediadir'];
         if (!$this->_path_is_absolute($mediadir)) {
