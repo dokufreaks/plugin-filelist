@@ -89,6 +89,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             'showsize' => 0,
             'showdate' => 0,
             'listsep' => '", "',
+            'onhover' => 0,
         );
         foreach($flags as $flag) {
             list($name, $value) = explode('=', $flag);
@@ -517,7 +518,11 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             if ($previewsize == 0) {
                 $previewsize = 32;
             }
-            $renderer->doc .= '<img style=" max-height: '.$previewsize.'px; max-width: '.$previewsize.'px;" src="'.$imgLink.'">';
+            $imgclass = '';
+            if ($params['onhover']) {
+                $imgclass = 'class="filelist_preview"';
+            }
+            $renderer->doc .= '<img '.$imgclass.' style=" max-height: '.$previewsize.'px; max-width: '.$previewsize.'px;" src="'.$imgLink.'">';
         }
     }
 
