@@ -29,8 +29,8 @@ jQuery(function () {
         } else {
             c = "";
         }
-        jQuery("body").append("<p id='__filelist_preview'><img src='" + this.src + "' alt='Image preview' />" + c + "</p>");
-        jQuery("#__filelist_preview")
+        jQuery("body").append("<p id='plugin__filelist_preview'><img src='" + this.src + "' alt='Image preview' />" + c + "</p>");
+        jQuery("#plugin__filelist_preview")
             .css("top", (e.pageY - xOffset) + "px")
             .css("left", (e.pageX + yOffset) + "px")
             .css("max-width", "300px")
@@ -39,10 +39,10 @@ jQuery(function () {
             .fadeIn("fast");
     }, function () {
         this.title = this.t;
-        jQuery("#__filelist_preview").remove();
+        jQuery("#plugin__filelist_preview").remove();
     });
     jQuery("img.filelist_preview").mousemove(function (e) {
-        jQuery("#__filelist_preview")
+        jQuery("#plugin__filelist_preview")
             .css("top", (e.pageY - xOffset) + "px")
             .css("left", (e.pageX + yOffset) + "px")
             .css("position", "absolute");
