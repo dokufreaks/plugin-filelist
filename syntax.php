@@ -90,6 +90,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             'showdate' => 0,
             'listsep' => '", "',
             'onhover' => 0,
+            'ftp' => 0,
         );
         foreach($flags as $flag) {
             list($name, $value) = explode('=', $flag);
@@ -212,7 +213,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         $link['pre']    = '';
         $link['suf']    = '';
         $link['more']   = '';
-        $link['url'] = $this->_get_link_url ($filepath, $basedir, $webdir, $params['randlinks'], $params['direct']);
+        $link['url'] = $this->_get_link_url ($filepath, $basedir, $webdir, $params['randlinks'], $params['direct'], $params['ftp']);
 
         $link['name']   = $filename;
         $link['title']  = $renderer->_xmlEntities($link['url']);
@@ -1014,7 +1015,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
      * @param $params the parameters of the filelist call
      * @return string the generated URL
      */
-    protected function _get_link_url ($filepath, $basedir, $webdir, $randlinks, $direct) {
+    protected function _get_link_url ($filepath, $basedir, $webdir, $randlinks, $direct, $ftp=false) {
         $urlparams = '';
         if ($randlinks) {
             $urlparams = '?'.time();
@@ -1023,6 +1024,15 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             $url = ml(':'.$this->_convert_mediapath($filepath)).$urlparams;
         } else {
             $url = $webdir.substr($filepath, strlen($basedir)).$urlparams;
+            if ($ftp)
+            {
+                if (strpos($url, 'http') === false) {
+                    $url = 'ftp:'.str_replace('\\','/', $url);
+                } else {
+                    $url = str_replace('\\','/', $url);
+                    $url = str_replace('http','ftp', $url);
+                }
+            }
         }
         return $url;
     }
