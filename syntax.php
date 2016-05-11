@@ -1026,10 +1026,10 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             $url = $webdir.substr($filepath, strlen($basedir)).$urlparams;
             if ($ftp)
             {
+                $url = str_replace('\\','/', $url);
                 if (strpos($url, 'http') === false) {
-                    $url = 'ftp:'.str_replace('\\','/', $url);
+                    $url = 'ftp:'.$url;
                 } else {
-                    $url = str_replace('\\','/', $url);
                     $url = str_replace('http','ftp', $url);
                 }
             }
