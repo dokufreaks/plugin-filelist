@@ -544,7 +544,13 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             if ($params['onhover']) {
                 $imgclass = 'class="filelist_preview"';
             }
-            $renderer->doc .= '<img '.$imgclass.' style=" max-height: '.$previewsize.'px; max-width: '.$previewsize.'px;" src="'.$imgLink.'">';
+            
+            if (!$this->is_odt_export) {
+                $renderer->doc .= '<img '.$imgclass.' style=" max-height: '.$previewsize.'px; max-width: '.$previewsize.'px;" src="'.$imgLink.'">';
+            } else {
+                list($width, $height)  = $renderer->_odtGetImageSize ($imagepath, $previewsize, $previewsize);
+                $renderer->_odtAddImage ($imagepath, $width.'cm', $height.'cm');
+            }
         }
     }
 
