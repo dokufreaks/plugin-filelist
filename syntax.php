@@ -369,9 +369,27 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
     function _render_table($result, $params, $pos, Doku_Renderer $renderer) {
         global $conf;
 
-        $renderer->table_open(NULL, NULL, $pos);
+        if (!$this->is_odt_export) {
+            $renderer->table_open(NULL, NULL, $pos);
+        } else {
+            $columns = 1;
+            if ($params['tableshowsize'] || $params['showsize']) {
+                $columns++;
+            }
+            if ($params['tableshowdate'] || $params['showdate']) {
+                $columns++;
+            }
+            if ($params['preview']) {
+                $columns++;
+            }
+            $renderer->table_open($columns, NULL, $pos);
+        }
 
         if ($params['tableheader']) {
+            if ($this->is_odt_export) {
+                $renderer->tablerow_open();
+            }
+
             $renderer->tableheader_open();
             $renderer->doc .= $this->getLang('filename');
             $renderer->tableheader_close();
@@ -402,6 +420,10 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
                         break;
                 }
                 $renderer->tableheader_close();
+            }
+
+            if ($this->is_odt_export) {
+                $renderer->tablerow_close();
             }
         }
 
