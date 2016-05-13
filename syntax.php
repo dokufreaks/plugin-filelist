@@ -535,7 +535,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
     protected function _render_preview_image ($filepath, $basedir, $webdir, $params, Doku_Renderer $renderer) {
         $imagepath = $this->get_preview_image_path($filepath, $params);
         if (!empty($imagepath)) {
-            $imgLink = $this->_get_link_url ($imagepath, $basedir, $webdir, 0, $params['direct']);
+            $imgLink = $this->_get_link_url ($imagepath, $basedir, $webdir, 0, 1);
 
             $previewsize = $params['previewsize'];
             if ($previewsize == 0) {
