@@ -741,7 +741,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * Does a (recursive) crawl for finging files based on a given pattern.
+     * Does a (recursive) crawl for finding files based on a given pattern.
      * Based on a safe glob reimplementation using fnmatch and opendir.
      *
      * @param $pattern the pattern to match to
@@ -963,7 +963,10 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
      */
     function _path_is_absolute($path) {
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            return ($path[1] == ':');
+            if ($path[1] == ':' || ($path[0] == '/' && $path[1] == '/')) {
+                return true;
+            }
+            return false;
         } else {
             return ($path[0] == '/');
         }
