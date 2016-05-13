@@ -886,8 +886,8 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         $path=explode('/', $path);
         $output=array();
         for ($i=0; $i<sizeof($path); $i++) {
-            if (('' == $path[$i] && $i > 0) || '.' == $path[$i]) continue;
-            if ('..' == $path[$i] && $i > 0 && '..' != $output[sizeof($output) - 1]) {
+            if ('.' == $path[$i]) continue;
+            if ('..' == $path[$i] && '..' != $output[sizeof($output) - 1]) {
                 array_pop($output);
                 continue;
             }
