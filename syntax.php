@@ -131,10 +131,10 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
 
             // if we got nothing back, display a message
             if ($result == DOKU_PLUGIN_FILELIST_NOMATCH) {
-                $renderer->doc .= '[n/a: ' . $this->getLang('error_nomatch') . ']';
+                $renderer->cdata('[n/a: ' . $this->getLang('error_nomatch') . ']');
                 return true;
             } else if ($result == DOKU_PLUGIN_FILELIST_OUTSIDEJAIL) {
-                $renderer->doc .= '[n/a: ' . $this->getLang('error_outsidejail') . ']';
+                $renderer->cdata('[n/a: ' . $this->getLang('error_outsidejail') . ']');
                 return true;
             }
 
@@ -240,7 +240,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             }
         } else {
             // No link, just plain text.
-            $renderer->doc .= $filename;
+            $renderer->cdata($filename);
         }
     }
 
@@ -309,7 +309,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
                 if ($this->is_odt_export) {
                     $renderer->p_open();
                 }
-                $renderer->doc .= $file['name'];
+                $renderer->cdata($file['name']);
                 $this->_render_list_items($file['children'], $basedir, $webdir, $params, $renderer, $level+1);
                 if ($this->is_odt_export) {
                     $renderer->p_close();
@@ -332,12 +332,12 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
 
                 // render filesize
                 if ($params['showsize']) {
-                    $renderer->doc .= $params['listsep'].$this->_size_readable($file['size'], 'PiB', 'bi', '%01.1f %s');
+                    $renderer->cdata($params['listsep'].$this->_size_readable($file['size'], 'PiB', 'bi', '%01.1f %s'));
                 }
 
                 // render lastmodified
                 if ($params['showdate']) {
-                    $renderer->doc .= $params['listsep'].strftime($conf['dformat'], $file['mtime']);
+                    $renderer->cdata($params['listsep'].strftime($conf['dformat'], $file['mtime']));
                 }
 
                 // close list item
@@ -392,18 +392,18 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             }
 
             $renderer->tableheader_open();
-            $renderer->doc .= $this->getLang('filename');
+            $renderer->cdata($this->getLang('filename'));
             $renderer->tableheader_close();
 
             if ($params['tableshowsize'] || $params['showsize']) {
                 $renderer->tableheader_open();
-                $renderer->doc .= $this->getLang('filesize');
+                $renderer->cdata($this->getLang('filesize'));
                 $renderer->tableheader_close();
             }
 
             if ($params['tableshowdate'] || $params['showdate']) {
                 $renderer->tableheader_open();
-                $renderer->doc .= $this->getLang('lastmodified');
+                $renderer->cdata($this->getLang('lastmodified'));
                 $renderer->tableheader_close();
             }
 
@@ -411,13 +411,13 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
                 $renderer->tableheader_open(1, 'center', 1);
                 switch ($params['preview']) {
                     case 1:
-                        $renderer->doc .= $this->getLang('preview').' / '.$this->getLang('filetype');
+                        $renderer->cdata($this->getLang('preview').' / '.$this->getLang('filetype'));
                         break;
                     case 2:
-                        $renderer->doc .= $this->getLang('preview');
+                        $renderer->cdata($this->getLang('preview'));
                         break;
                     case 3:
-                        $renderer->doc .= $this->getLang('filetype');
+                        $renderer->cdata($this->getLang('filetype'));
                         break;
                 }
                 $renderer->tableheader_close();
@@ -436,13 +436,13 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
 
             if ($params['tableshowsize'] || $params['showsize']) {
                 $renderer->tablecell_open(1, 'right');
-                $renderer->doc .= $this->_size_readable($file['size'], 'PiB', 'bi', '%01.1f %s');
+                $renderer->cdata($this->_size_readable($file['size'], 'PiB', 'bi', '%01.1f %s'));
                 $renderer->tablecell_close();
             }
 
             if ($params['tableshowdate'] || $params['showdate']) {
                 $renderer->tablecell_open();
-                $renderer->doc .= strftime($conf['dformat'], $file['mtime']);
+                $renderer->cdata(strftime($conf['dformat'], $file['mtime']));
                 $renderer->tablecell_close();
             }
 
