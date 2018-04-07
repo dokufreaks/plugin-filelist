@@ -533,9 +533,15 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
      * @return void
      */
     protected function _render_preview_image ($filepath, $basedir, $webdir, $params, Doku_Renderer $renderer) {
-        $imagepath = $this->get_preview_image_path($filepath, $params);
+        $imagepath = $this->get_preview_image_path($filepath, $params, $isImage);
         if (!empty($imagepath)) {
-            $imgLink = $this->_get_link_url ($imagepath, $basedir, $webdir, 0, 1);
+            if ($isImage == false) {
+                // Generate link to returned filetype icon
+                $imgLink = $this->_get_link_url ($imagepath, $basedir, $webdir, 0, 1);
+            } else {
+                // Generate link to image file
+                $imgLink = $this->_get_link_url ($filepath, $basedir, $webdir, $params['randlinks'], $params['direct'], $params['ftp']);
+            }
 
             $previewsize = $params['previewsize'];
             if ($previewsize == 0) {
@@ -545,7 +551,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             if ($params['onhover']) {
                 $imgclass = 'class="filelist_preview"';
             }
-            
+
             if (!$this->is_odt_export) {
                 $renderer->doc .= '<img '.$imgclass.' style=" max-height: '.$previewsize.'px; max-width: '.$previewsize.'px;" src="'.$imgLink.'">';
             } else {
@@ -971,7 +977,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             return ($path[0] == '/');
         }
     }
-    
+
     function _convert_mediapath($path) {
         $mid = str_replace('/', ':', substr($path, strlen($this->mediadir))); // strip media base dir
         return ltrim($mid, ':'); // strip leading :
@@ -989,13 +995,15 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
      * @param $filename the file to check
      * @return string Image to use for preview image
      */
-    protected function get_preview_image_path ($filename, $params) {
+    protected function get_preview_image_path ($filename, $params, &$isImage) {
         list($ext,$mime) = mimetype(basename($filename));
         $imagepath = '';
+        $isImage = false;
         if (($params['preview'] == 1 || $params['preview'] == 2) &&
             strncmp($mime, 'image', strlen('image')) == 0) {
             // The file is an image. Return itself as the image path.
             $imagepath = $filename;
+            $isImage = true;
         }
         if (($params['preview'] == 1 && empty($imagepath)) ||
             $params['preview'] == 3 ) {
