@@ -88,6 +88,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             'link' => 2,
             'showsize' => 0,
             'showdate' => 0,
+            'showcreator' => 0,
             'listsep' => '", "',
             'onhover' => 0,
             'ftp' => 0,
@@ -340,6 +341,11 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
                     $renderer->cdata($params['listsep'].strftime($conf['dformat'], $file['mtime']));
                 }
 
+                // render lastmodified
+                if ($params['showcreator']) {
+                    $renderer->cdata($params['listsep'].$file['creator']);
+                }
+
                 // close list item
                 if ($this->is_odt_export) {
                     $renderer->p_close();
@@ -380,6 +386,9 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             if ($params['tableshowdate'] || $params['showdate']) {
                 $columns++;
             }
+            if ($params['showcreator']) {
+                $columns++;
+            }
             if ($params['preview']) {
                 $columns++;
             }
@@ -404,6 +413,12 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             if ($params['tableshowdate'] || $params['showdate']) {
                 $renderer->tableheader_open();
                 $renderer->cdata($this->getLang('lastmodified'));
+                $renderer->tableheader_close();
+            }
+
+            if ($params['showcreator']) {
+                $renderer->tableheader_open();
+                $renderer->cdata($this->getLang('createdby'));
                 $renderer->tableheader_close();
             }
 
@@ -443,6 +458,12 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             if ($params['tableshowdate'] || $params['showdate']) {
                 $renderer->tablecell_open();
                 $renderer->cdata(strftime($conf['dformat'], $file['mtime']));
+                $renderer->tablecell_close();
+            }
+
+            if ($params['showcreator']) {
+                $renderer->tablecell_open();
+                $renderer->cdata($file['creator']);
                 $renderer->tablecell_close();
             }
 
@@ -817,7 +838,22 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
                     }
 
                     // prepare entry
+                    $creator = '';
                     if (!is_dir($filepath) || $params['recursive']) {
+                        if (!$params['direct']) {
+                            $medialog = new MediaChangeLog($mid);
+                            $revinfo = $medialog->getRevisionInfo(@filemtime(fullpath(mediaFN($mid))));
+
+                            if($revinfo['user']) {
+                                $creator = $revinfo['user'];
+                            } else {
+                                $creator = $revinfo['ip'];
+                            }
+                        }
+                        if (empty($creator)) {
+                            $creator = $this->getLang('creatorunknown');
+                        }
+
                         $entry = array(
                             'name' => $filename,
                             'path' => $filepath,
@@ -826,6 +862,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
                             'size' => filesize($filepath),
                             'children' => ((is_dir($filepath) && $params['recursive']) ? $this->_crawl_files($filepath . '/' . $match, $params) : false),
                             'treesize' => 0,
+                            'creator' => $creator,
                         );
 
                         // calculate tree size

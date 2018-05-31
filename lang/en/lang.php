@@ -14,3 +14,5 @@ $lang['error_nomatch'] = 'No match';
 $lang['error_outsidejail'] = 'Access denied';
 $lang['preview'] = 'Preview';
 $lang['filetype'] = 'Filetype';
+$lang['createdby'] = 'Created by';
+$lang['creatorunknown'] = 'Unknown';
