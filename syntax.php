@@ -122,7 +122,9 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         }
         
         // disable caching
-        $renderer->info['cache'] = (bool) $params['cache'];
+        if ($params['cache'] === 0) {
+            $renderer->nocache();
+        }
         if ($mode == 'xhtml' || $mode == 'odt') {
 
             $result = $this->_create_filelist($pattern, $params);
