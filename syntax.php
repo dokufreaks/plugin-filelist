@@ -6,13 +6,6 @@
  * @author     Gina Haeussge <osd@foosel.net>
  */
 
-if(!defined('DOKU_INC')) define('DOKU_INC',realpath(dirname(__FILE__).'/../../').'/');
-if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
-
-require_once(DOKU_PLUGIN.'syntax.php');
-require_once(DOKU_INC.'inc/confutils.php');
-require_once(DOKU_INC.'inc/pageutils.php');
-
 define('DOKU_PLUGIN_FILELIST_NOMATCH', -1);
 define('DOKU_PLUGIN_FILELIST_OUTSIDEJAIL', -2);
 
