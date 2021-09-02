@@ -677,7 +677,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
             $callback = array($this, '_compare_names');
             if ($params['order'] == 'desc') $reverseflag = true;
         }
-        $this->_sort_filelist($result['files'], $callback, $reverseflag);
+        $result['files'] = $this->_sort_filelist($result['files'], $callback, $reverseflag);
 
         // return the list
         if (count($result['files']) > 0)
@@ -710,6 +710,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
         if ($reverse) {
             $files = array_reverse($files);
         }
+        return $files;
     }
 
     /**
