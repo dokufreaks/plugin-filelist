@@ -951,7 +951,16 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
      * @return the converted path
      */
     function _win_path_convert($path) {
-        return str_replace('\\', '/', trim($path));
+        if(substr($path, 0, 2) == '\\\\') {
+			$unc = '\\\\';
+		} else {
+			$unc = '';
+		}
+
+		$path = ltrim($path, '\\');
+
+		return $unc .str_replace('\\', '/', trim($path));
+		//return trim($path);
     }
 
     /**
@@ -1001,6 +1010,7 @@ class syntax_plugin_filelist extends DokuWiki_Syntax_Plugin {
      */
     function _path_is_absolute($path) {
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            if($path[0] == '\\' && $path[1] == '\\') return true;
             if ($path[1] == ':' || ($path[0] == '/' && $path[1] == '/')) {
                 return true;
             }
