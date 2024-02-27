@@ -7,6 +7,8 @@
  * @author Gina Haeussge <osd@foosel.net>
  */
 
+$meta['paths'] = array('');
+
 $meta['allow_in_comments'] = array('onoff');
 $meta['allowed_absolute_paths'] = array('');
 $meta['web_paths'] = array('');
