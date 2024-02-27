@@ -210,7 +210,7 @@ class Output
         $link['title'] = $renderer->_xmlEntities($link['url']);
         if ($conf['relnofollow']) $link['more'] .= ' rel="nofollow"';
         [$ext,] = mimetype(basename($item['local']));
-        $link['class'] .= ' mediafile mf_' . $ext;
+        $link['class'] = 'media mediafile mf_' . $ext;
         $renderer->doc .= $renderer->_formatLink($link);
     }
 

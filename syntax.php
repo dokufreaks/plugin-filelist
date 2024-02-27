@@ -80,7 +80,7 @@ class syntax_plugin_filelist extends SyntaxPlugin
             'ftp' => 0
         ];
         foreach ($flags as $flag) {
-            [$name, $value] = explode('=', $flag);
+            [$name, $value] = sexplode('=', $flag, 2, '');
             $params[trim($name)] = trim(trim($value), '"'); // quotes can be use to keep whitespace
         }
 

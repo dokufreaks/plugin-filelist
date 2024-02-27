@@ -15,6 +15,16 @@ class Path
     }
 
     /**
+     * Access the parsed paths
+     *
+     * @return array
+     */
+    public function getPaths()
+    {
+        return $this->paths;
+    }
+
+    /**
      * Parse the path configuration into an internal array
      *
      * roots (and aliases) are always saved with a trailing slash
@@ -133,7 +143,7 @@ class Path
         for ($i = 0; $i < $counter; $i++) {
             if ('.' == $path[$i]) continue;
             if ('' === $path[$i] && $i > 0) continue;
-            if ('..' == $path[$i] && '..' != $output[count($output) - 1]) {
+            if ('..' == $path[$i] && '..' != ($output[count($output) - 1] ?? '')) {
                 array_pop($output);
                 continue;
             }
