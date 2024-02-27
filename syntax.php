@@ -57,27 +57,15 @@ class syntax_plugin_filelist extends SyntaxPlugin
         $params = [
             'sort' => 'name',
             'order' => 'asc',
-            'index' => 0,
-            'limit' => 0,
-            'offset' => 0,
             'style' => 'list',
             'tableheader' => 0,
-            'tableshowsize' => 0,
-            'tableshowdate' => 0,
-            'direct' => 0,
             'recursive' => 0,
             'titlefile' => '_title.txt',
             'cache' => 0,
             'randlinks' => 0,
-            'preview' => 0,
-            'previewsize' => 32,
-            'link' => 2,
             'showsize' => 0,
             'showdate' => 0,
-            'showcreator' => 0,
             'listsep' => '", "',
-            'onhover' => 0,
-            'ftp' => 0
         ];
         foreach ($flags as $flag) {
             [$name, $value] = sexplode('=', $flag, 2, '');
