@@ -4,7 +4,6 @@ namespace dokuwiki\plugin\filelist;
 
 class Crawler
 {
-
     /** @var string regexp to check extensions */
     protected $ext;
 

@@ -1,5 +1,7 @@
 <?php
 
+// phpcs:disable PSR1.Files.SideEffects.FoundWithSymbols
+
 use dokuwiki\plugin\filelist\Path;
 
 if (!defined('DOKU_INC')) define('DOKU_INC', __DIR__ . '/../../../');
@@ -37,4 +39,3 @@ try {
     echo $e->getMessage();
     exit;
 }
-

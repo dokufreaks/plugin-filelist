@@ -46,7 +46,7 @@ class Path
                 // this is an alias for the last read root
                 $line = trim(substr($line, 2));
                 if (!isset($paths[$lastRoot])) continue; // no last root, no alias
-                $alias = $this->cleanPath($line);
+                $alias = static::cleanPath($line);
                 $paths[$lastRoot]['alias'] = $alias;
                 $paths[$alias] = &$paths[$lastRoot]; // alias references the original
             } elseif (str_starts_with($line, 'W>')) {
@@ -56,11 +56,11 @@ class Path
                 $paths[$lastRoot]['web'] = $line;
             } else {
                 // this is a new path
-                $line = $this->cleanPath($line);
+                $line = static::cleanPath($line);
                 $lastRoot = $line;
                 $paths[$line] = [
                     'root' => $line,
-                    'web' => DOKU_BASE . 'lib/plugins/filelist/file.php?root=' . rawurlencode($line).'&file=',
+                    'web' => DOKU_BASE . 'lib/plugins/filelist/file.php?root=' . rawurlencode($line) . '&file=',
                 ];
             }
         }
@@ -78,13 +78,11 @@ class Path
      */
     public function getPathInfo($path, $addTrailingSlash = true)
     {
-        $path = $this->cleanPath($path, $addTrailingSlash);
+        $path = static::cleanPath($path, $addTrailingSlash);
 
         $paths = $this->paths;
         $allowed = array_keys($paths);
-        usort($allowed, function ($a, $b) {
-            return strlen($a) - strlen($b);
-        });
+        usort($allowed, static fn($a, $b) => strlen($a) - strlen($b));
         $allowed = array_map('preg_quote_cb', $allowed);
         $regex = '/^(' . implode('|', $allowed) . ')/';
 

@@ -88,7 +88,7 @@ class syntax_plugin_filelist extends SyntaxPlugin
         $path = Path::cleanPath($path, false);
         $parts = explode('/', $path);
         $pattern = array_pop($parts);
-        $base = join('/', $parts) . '/';
+        $base = implode('/', $parts) . '/';
 
         return [$base, $pattern, $params];
     }
@@ -121,7 +121,14 @@ class syntax_plugin_filelist extends SyntaxPlugin
         $crawler = new Crawler($this->getConf('extensions'));
         $crawler->setSortBy($params['sort']);
         $crawler->setSortReverse($params['order'] === 'desc');
-        $result = $crawler->crawl($pathInfo['root'], $pathInfo['local'], $pattern, $params['recursive'], $params['titlefile']);
+
+        $result = $crawler->crawl(
+            $pathInfo['root'],
+            $pathInfo['local'],
+            $pattern,
+            $params['recursive'],
+            $params['titlefile']
+        );
 
         // if we got nothing back, display a message
         if ($result == []) {
@@ -139,10 +146,7 @@ class syntax_plugin_filelist extends SyntaxPlugin
             case 'table':
                 $output->renderAsTable($params);
                 break;
-
         }
         return true;
-
     }
-
 }
