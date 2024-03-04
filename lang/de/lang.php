@@ -12,7 +12,3 @@ $lang['filesize'] = 'Dateigröße';
 $lang['lastmodified'] = 'Letzte Änderung';
 $lang['error_nomatch'] = 'Keine Treffer';
 $lang['error_outsidejail'] = 'Zugriff verweigert';
-$lang['preview'] = 'Vorschau';
-$lang['filetype'] = 'Dateityp';
-$lang['createdby'] = 'Erstellt von';
-$lang['creatorunknown'] = 'Unbekannt';

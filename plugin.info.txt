@@ -1,6 +1,6 @@
 base   filelist
 author Gina Häußge, Dokufreaks
-email  gina@foosel.net, freaks@dokuwiki.org
+email  freaks@dokuwiki.org
 date   2020-09-27
 name   Filelist Plugin
 desc   Lists files matching a given glob pattern.
