@@ -13,6 +13,9 @@ class Crawler
     /** @var bool */
     protected $sortreverse = false;
 
+    /** @var string[] patterns to ignore */
+    protected $ignore = [];
+
     /**
      * Initializes the crawler
      *
@@ -24,6 +27,8 @@ class Crawler
         $this->ext = array_map('trim', $this->ext);
         $this->ext = array_map('preg_quote_cb', $this->ext);
         $this->ext = implode('|', $this->ext);
+
+        $this->ignore = $this->loadIgnores();
     }
 
     public function setSortBy($sortby)
@@ -65,6 +70,9 @@ class Crawler
 
             if ($this->fnmatch($pattern, $file) || (is_dir($filepath) && $recursive)) {
                 if (!is_dir($filepath) && !$this->isExtensionAllowed($file)) {
+                    continue;
+                }
+                if ($this->isFileIgnored($file)) {
                     continue;
                 }
 
@@ -141,6 +149,35 @@ class Crawler
         return preg_match('/(' . $this->ext . ')$/i', $file);
     }
 
+    /**
+     * Check if a file is ignored by the ignore patterns
+     *
+     * @param string $file
+     * @return bool
+     */
+    protected function isFileIgnored($file)
+    {
+        foreach ($this->ignore as $pattern) {
+            if ($this->fnmatch($pattern, $file)) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Load the ignore patterns from the ignore.txt file
+     *
+     * @return string[]
+     */
+    protected function loadIgnores()
+    {
+        $file = __DIR__ . '/conf/ignore.txt';
+        $ignore = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $ignore = array_map(function ($line) {
+            return trim(preg_replace('/\s*#.*$/', '', $line));
+        }, $ignore);
+        $ignore = array_filter($ignore);
+        return $ignore;
+    }
 
     /**
      * Replacement for fnmatch() for windows systems.
