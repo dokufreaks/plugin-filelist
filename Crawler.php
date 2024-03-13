@@ -172,9 +172,7 @@ class Crawler
     {
         $file = __DIR__ . '/conf/ignore.txt';
         $ignore = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        $ignore = array_map(function ($line) {
-            return trim(preg_replace('/\s*#.*$/', '', $line));
-        }, $ignore);
+        $ignore = array_map(static fn($line) => trim(preg_replace('/\s*#.*$/', '', $line)), $ignore);
         $ignore = array_filter($ignore);
         return $ignore;
     }
