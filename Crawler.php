@@ -58,7 +58,7 @@ class Crawler
         $path = $root . $local;
 
         // do not descent into wiki or data directories
-        if(Path::isWikiControlled($path)) return [];
+        if (Path::isWikiControlled($path)) return [];
 
         if (($dir = opendir($path)) === false) return [];
         $result = [];
