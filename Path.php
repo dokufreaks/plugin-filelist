@@ -149,4 +149,26 @@ class Path
         }
         return implode('/', $output);
     }
+
+    /**
+     * Check if the given path is within the data or dokuwiki dir
+     *
+     * This whould prevent accidental or deliberate circumvention of the ACLs
+     *
+     * @param string $path and already cleaned path
+     * @return bool
+     */
+    public static function isWikiControlled($path)
+    {
+        global $conf;
+        $dataPath = self::cleanPath($conf['savedir']);
+        if (str_starts_with($path, $dataPath)) {
+            return true;
+        }
+        $wikiDir = self::cleanPath(DOKU_INC);
+        if (str_starts_with($path, $wikiDir)) {
+            return true;
+        }
+        return false;
+    }
 }

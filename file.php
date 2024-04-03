@@ -19,6 +19,10 @@ $path = $INPUT->str('root') . $INPUT->str('file');
 
 try {
     $pathInfo = $pathUtil->getPathInfo($path, false);
+    if ($pathUtil::isWikiControlled($pathInfo['path'])) {
+        throw new Exception('Access to wiki files is not allowed');
+    }
+
     if (!is_readable($pathInfo['path'])) {
         header('Content-Type: text/plain');
         http_status(404);
