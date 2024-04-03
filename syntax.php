@@ -65,7 +65,7 @@ class syntax_plugin_filelist extends SyntaxPlugin
             'randlinks' => 0,
             'showsize' => 0,
             'showdate' => 0,
-            'listsep' => '", "',
+            'listsep' => ', ',
         ];
         foreach ($flags as $flag) {
             [$name, $value] = sexplode('=', $flag, 2, '');
