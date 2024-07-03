@@ -81,6 +81,10 @@ class Path
         $path = static::cleanPath($path, $addTrailingSlash);
 
         $paths = $this->paths;
+        if ($paths === []) {
+            throw new \Exception('No paths configured');
+        }
+
         $allowed = array_keys($paths);
         usort($allowed, static fn($a, $b) => strlen($a) - strlen($b));
         $allowed = array_map('preg_quote_cb', $allowed);
