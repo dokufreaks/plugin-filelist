@@ -55,7 +55,7 @@ class Crawler
      */
     public function crawl($root, $local, $pattern, $recursive, $titlefile)
     {
-        $path = $root . $local;
+        $path = Path::toAbsolute($root . $local);
 
         // do not descent into wiki or data directories
         if (Path::isWikiControlled($path)) return [];
@@ -67,8 +67,9 @@ class Crawler
                 // ignore hidden, system and title files
                 continue;
             }
-            $self = $local . '/' . $file;
-            $filepath = $path . '/' . $file;
+            // join without introducing leading or doubled slashes (local may be empty or end in /)
+            $self = ($local === '') ? $file : rtrim($local, '/') . '/' . $file;
+            $filepath = rtrim($path, '/') . '/' . $file;
             if (!is_readable($filepath)) continue;
 
             if ($this->fnmatch($pattern, $file) || (is_dir($filepath) && $recursive)) {

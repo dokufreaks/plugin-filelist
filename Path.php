@@ -97,7 +97,7 @@ class Path
 
         $pathInfo = $paths[$match];
         $pathInfo['local'] = substr($path, strlen($match));
-        $pathInfo['path'] = $pathInfo['root'] . $pathInfo['local'];
+        $pathInfo['path'] = static::toAbsolute($pathInfo['root'] . $pathInfo['local']);
 
 
         return $pathInfo;
@@ -155,9 +155,50 @@ class Path
     }
 
     /**
+     * Check if the given (already cleaned) path is absolute
+     *
+     * Recognizes unix paths, Windows drive letters and UNC paths.
+     *
+     * @param string $path an already cleaned path
+     * @return bool
+     */
+    public static function isAbsolute($path)
+    {
+        if (str_starts_with($path, '/')) return true; // unix
+        if (str_starts_with($path, '\\\\')) return true; // UNC
+        if (preg_match('/^[a-zA-Z]:/', $path)) return true; // windows drive letter
+        return false;
+    }
+
+    /**
+     * Resolve a (cleaned) path to an absolute one
+     *
+     * Relative paths are resolved against the DokuWiki directory (DOKU_INC), the same way
+     * DokuWiki itself treats relative config paths. This makes path handling independent of
+     * the current working directory, which otherwise differs between the wiki renderer
+     * (doku.php, cwd = wiki root) and the file delivery script (file.php, cwd = plugin dir).
+     *
+     * Absolute paths (unix, Windows drive letters, UNC) are returned unchanged.
+     *
+     * @param string $path an already cleaned path
+     * @return string
+     */
+    public static function toAbsolute($path)
+    {
+        if (self::isAbsolute($path)) {
+            return $path;
+        }
+        return self::cleanPath(DOKU_INC, false) . '/' . $path;
+    }
+
+    /**
      * Check if the given path is within the data or dokuwiki dir
      *
      * This whould prevent accidental or deliberate circumvention of the ACLs
+     *
+     * Both the given path and the wiki/data directories are resolved to absolute paths
+     * before comparison. Without this, a relatively configured root (e.g. "firmware") would
+     * never match the absolute DOKU_INC and the check would be silently bypassed.
      *
      * @param string $path and already cleaned path
      * @return bool
@@ -165,11 +206,13 @@ class Path
     public static function isWikiControlled($path)
     {
         global $conf;
-        $dataPath = self::cleanPath($conf['savedir']);
+        $path = self::toAbsolute($path);
+
+        $dataPath = self::toAbsolute(self::cleanPath($conf['savedir']));
         if (str_starts_with($path, $dataPath)) {
             return true;
         }
-        $wikiDir = self::cleanPath(DOKU_INC);
+        $wikiDir = self::toAbsolute(self::cleanPath(DOKU_INC));
         if (str_starts_with($path, $wikiDir)) {
             return true;
         }

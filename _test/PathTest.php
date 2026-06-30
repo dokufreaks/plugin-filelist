@@ -110,4 +110,49 @@ EOT
         $this->expectExceptionMessageMatches('/Path not allowed/');
         $this->path->getPathInfo($path);
     }
+
+    /**
+     * Relative paths have to be resolved to an absolute path so that file access works
+     * regardless of the current working directory (which differs between doku.php and file.php)
+     */
+    public function testRelativePathIsResolvedToAbsolute()
+    {
+        $path = new Path('relative/root/');
+        $pathInfo = $path->getPathInfo('relative/root/sub/file.txt', false);
+
+        $this->assertEquals(
+            Path::cleanPath(DOKU_INC, false) . '/relative/root/sub/file.txt',
+            $pathInfo['path']
+        );
+    }
+
+    /**
+     * Absolute configured paths must be passed through unchanged
+     */
+    public function testAbsolutePathIsKept()
+    {
+        $path = new Path('/somewhere/else/');
+        $pathInfo = $path->getPathInfo('/somewhere/else/file.txt', false);
+        $this->assertEquals('/somewhere/else/file.txt', $pathInfo['path']);
+    }
+
+    /**
+     * The wiki/data directory guard must trigger even for relatively configured roots.
+     *
+     * This is the regression behind issue #50: a relative root like "firmware" never matched
+     * the absolute DOKU_INC, so the guard was silently bypassed and wiki files could be served.
+     */
+    public function testIsWikiControlled()
+    {
+        global $conf;
+
+        // relative path inside the DokuWiki directory (cwd-independent)
+        $this->assertTrue(Path::isWikiControlled('lib/plugins/filelist'));
+        // absolute path inside the DokuWiki directory (e.g. the password hashes)
+        $this->assertTrue(Path::isWikiControlled(DOKU_INC . 'conf/users.auth.php'));
+        // the configured data directory
+        $this->assertTrue(Path::isWikiControlled($conf['savedir'] . '/pages/wiki/dokuwiki.txt'));
+        // a path completely outside the wiki must be allowed
+        $this->assertFalse(Path::isWikiControlled('/some/other/place/file.txt'));
+    }
 }
